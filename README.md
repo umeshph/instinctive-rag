@@ -28,18 +28,66 @@ Instructions on how to set up the project environment.
 
 ---
 
-## How to Run ▶️
+# Instinctive RAG Project
 
-Explain how to execute your code.
-
-To run the main script, execute the following command in your terminal:
-```bash
-python your_main_script.py
-```
-*Make sure to mention any command-line arguments or required user inputs.*
+This project is a small Question & Answer (Q&A) service built over a tiny set of documents, powered by a FastAPI backend.
 
 ---
 
+## Setup ⚙️
+
+Follow these steps to set up the project environment on your local machine.
+
+1.  **Clone the repository:**
+    ```bash
+    git clone [https://github.com/umeshph/instinctive-rag.git](https://github.com/umeshph/instinctive-rag.git)
+    cd instinctive-rag
+    ```
+
+2.  **Create and activate a virtual environment:**
+    ```bash
+    # For Windows
+    python -m venv venv
+    .\venv\Scripts\activate
+    ```
+
+3.  **Install dependencies:**
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+---
+
+## How to Run Locally ▶️
+
+Once the setup is complete, you can run the web server on your local machine.
+
+1.  **Navigate to the project directory** (if you're not already there):
+    ```powershell
+    cd D:\instinctive_rag
+    ```
+
+2.  **Activate the virtual environment**:
+    ```powershell
+    .\venv\Scripts\activate
+    ```
+
+3.  **Start the web server**:
+    ```bash
+    uvicorn api:app --reload
+    ```
+
+4.  **Access the API documentation**:
+    Open your web browser and navigate to the interactive API documentation at:
+    [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+
+---
+
+## Learnings 🧠
+
+-   **Technical Skill:** I learned how to implement data aggregation and transformation using the pandas library. For example, I used the `requests` library to efficiently handle API calls.
+-   **Challenge:** One major challenge was handling missing values and inconsistent data types within the dataset, which I solved by implementing a pre-processing function that cleans the data by filling null values with the column's median and standardizing data formats.
+-   **Key Takeaway:** My main takeaway is the importance of version control using Git for building robust applications.
 ## Results Table 📊
 
 Present your key findings or results in a table.
