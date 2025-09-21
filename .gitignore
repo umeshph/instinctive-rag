@@ -1,0 +1,65 @@
+# --- Byte-compiled/optimized files ---
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# --- Virtual Environment ---
+# A general rule for common venv names
+/venv/
+/env/
+/.venv/
+/.env/
+
+# --- Dependency Management ---
+pip-wheel-metadata/
+pip-log.txt
+poetry.lock
+
+# --- Distribution / Packaging ---
+/build/
+/dist/
+/downloads/
+/eggs/
+*.egg-info/
+*.egg
+
+# --- IDE and Editor Configuration ---
+# Visual Studio Code
+.vscode/
+# PyCharm
+.idea/
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+# Atom
+.atom/
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# --- Testing ---
+.pytest_cache/
+.tox/
+.coverage
+.coverage.*
+htmlcov/
+nosetests.xml
+coverage.xml
+
+# --- Secrets and Environment Variables ---
+# Never commit sensitive files!
+*.env
+.env.*
+secrets.ini
+credentials.json
+
+# --- OS-specific files ---
+# macOS
+.DS_Store
+# Windows
+Thumbs.db
+Desktop.ini
+
+# --- Logs ---
+*.log
+*.log.*
