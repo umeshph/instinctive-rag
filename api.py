@@ -1,72 +1,69 @@
-from fastapi import FastAPI
-from pydantic import BaseModel
-import uvicorn
-import sqlite3
+import secrets
+from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
-# Import your search functions from search.py
-import search
+# 1. Initialize the FastAPI app
+app = FastAPI(
+    title="Instinctive RAG Q&A Service",
+    description="A simple service to ask questions over a set of documents."
+)
 
-# Create the FastAPI application
-app = FastAPI()
+# 2. Create the security object for HTTP Basic Auth
+security = HTTPBasic()
 
-# Define the request body model
-class AskRequest(BaseModel):
-    q: str
-    k: int = 5
-    mode: str = "rerank"  # Can be 'baseline' or 'rerank'
+# 3. Define a function to check user credentials
+def get_current_username(credentials: HTTPBasicCredentials = Depends(security)):
+    """
+    Checks the provided username and password against hardcoded values.
+    In a real-world application, you would check against a database.
+    """
+    # Use secrets.compare_digest to prevent timing attacks
+    correct_username = secrets.compare_digest(credentials.username, "admin")
+    correct_password = secrets.compare_digest(credentials.password, "secret")
 
-# Define the API endpoint
-@app.post("/ask")
-def ask_question(request: AskRequest):
-    reranker_used = False
-    contexts = []
+    if not (correct_username and correct_password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Basic"},
+        )
+    return credentials.username
 
-    if request.mode == "rerank":
-        reranker_used = True
-        search_results = search.hybrid_search(query=request.q, k=request.k)
-        
-        score_threshold = 100 
-        if not search_results or search_results[0]['final_score'] < score_threshold:
-            return {
-                "answer": "Could not find a confident answer.",
-                "contexts": [],
-                "reranker_used": reranker_used
-            }
-        
-        answer = search_results[0]['content']
-        contexts = search_results
-
-    else: # Baseline mode
-        reranker_used = False
-        ids, scores = search.vector_search(query=request.q, k=request.k)
-        
-        conn = sqlite3.connect('data.db')
-        cursor = conn.cursor()
-        for chunk_id, score in zip(ids, scores):
-            cursor.execute("SELECT content, source FROM chunks WHERE rowid = ?", (chunk_id,))
-            row = cursor.fetchone()
-            if row:
-                contexts.append({
-                    "content": row[0],
-                    "source": row[1],
-                    "score": float(1 - score) # Convert to standard float
-                })
-        conn.close()
-
-        score_threshold = 0.6
-        if not contexts or contexts[0]['score'] < score_threshold:
-             return {
-                "answer": "Could not find a confident answer.",
-                "contexts": [],
-                "reranker_used": reranker_used
-            }
-        answer = contexts[0]['content']
-
+# --- Your Project's Core Logic ---
+# You can import your search function from search.py or define it here.
+def perform_search(query: str) -> dict:
+    """
+    A placeholder for your actual search logic.
+    This function should take a query and return the search results.
+    """
+    # Replace this with a call to your actual search function
+    print(f"Performing search for: {query}")
     return {
-        "answer": answer,
-        "contexts": contexts,
-        "reranker_used": reranker_used
+        "query": query,
+        "results": [
+            {
+                "text": "This is a sample result from your documents.",
+                "source": "document1.pdf",
+                "score": 0.95
+            }
+        ]
     }
+# ------------------------------------
 
-if __name__ == '__main__':
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+# 4. Define the main API endpoint and protect it
+@app.post("/search")
+def search_documents(query: str, username: str = Depends(get_current_username)):
+    """
+    Performs a Q&A search on the indexed documents.
+
+    This endpoint is protected and requires a valid username and password.
+    - **query**: The question you want to ask.
+    """
+    # The code below will only run if authentication is successful.
+    results = perform_search(query)
+    return results
+
+# 5. (Optional) A root endpoint for basic health checks
+@app.get("/")
+def read_root():
+    return {"status": "ok", "message": "Welcome to the Instinctive RAG API!"}
